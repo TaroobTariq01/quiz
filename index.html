@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Biscuit Personality Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #e30613; /* Initial red background */
+      color: white;
+      font-family: 'Inter', sans-serif;
+      transition: background-color 0.5s ease-in-out; /* Smooth transition for background color change */
+    }
+    .biscuit-option:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    /* Custom styles for select elements to ensure consistent appearance */
+    select {
+      appearance: none; /* Remove default browser styling */
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%236B7280' d='M9.293 12.95l.707.707L15 8.707l-1.414-1.414L10 10.586 6.414 7l-1.414 1.414L9.293 12.95z'/%3E%3C/svg%3E"); /* Custom arrow icon */
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 1.5em 1.5em;
+      padding-right: 2.5rem; /* Make space for the arrow */
+    }
+
+    /* Loading screen styles */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #e30613; /* Red background */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8rem; /* Large 'C' */
+      color: white;
+      z-index: 1000;
+      opacity: 0; /* Initially hidden */
+      visibility: hidden;
+      transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    }
+
+    .loading-screen.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Spinning 'C' animation */
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .spinner {
+      animation: spin 1.5s linear infinite; /* Smooth continuous spin */
+    }
+
+    /* Result Page styles */
+    .result-page {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1rem;
+      box-sizing: border-box;
+      z-index: 999; /* Below loading screen */
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+    }
+
+    .result-page.show {
+      opacity: 1;
+      visibility: visible;
+    }
+  </style>
+</head>
+<body class="min-h-screen p-6 flex flex-col items-center justify-center">
+  <div id="quizContainer" class="max-w-2xl w-full bg-white text-black rounded-2xl shadow-xl p-8 space-y-6">
+    <h1 class="text-3xl font-bold text-center text-red-600">Which Biscuit Are You?</h1>
+    <form id="quizForm" class="space-y-6">
+      <div>
+        <label class="block font-semibold mb-1">1. Your ideal weekend activity?</label>
+        <select name="q1" class="biscuit-option w-full p-2 rounded bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500">
+          <option value="">Select an option</option> <!-- Default empty option -->
+          <option value="Prince">Exploring with friends</option>
+          <option value="Zeera Plus">Chilling with chai and family</option>
+          <option value="Oreo">Watching cartoons and snacking</option>
+          <option value="Candi">Scrolling Pinterest or journaling</option>
+          <option value="Gala">Hosting a game night</option>
+          <option value="Wheatable">Hiking or yoga class</option>
+          <option value="Tuc">Movie night with snacks</option>
+          <option value="MilcuLo">Reminiscing old school memories</option>
+          <option value="Cadbury">Reading or luxury me-time</option>
+        </select>
+      </div>
+      
+      <div>
+        <label class="block font-semibold mb-1">2. Your personality in one word?</label>
+        <select name="q2" class="biscuit-option w-full p-2 rounded bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500">
+          <option value="">Select an option</option>
+          <option value="Prince">Adventurous</option>
+          <option value="Zeera Plus">Traditional</option>
+          <option value="Oreo">Playful</option>
+          <option value="Candi">Chic</option>
+          <option value="Gala">Jolly</option>
+          <option value="Wheatable">Organized</option>
+          <option value="Tuc">Friendly</option>
+          <option value="MilcuLo">Nostalgic</option>
+          <option value="Cadbury">Intense</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block font-semibold mb-1">3. What’s your go-to drink?</label>
+        <select name="q3" class="biscuit-option w-full p-2 rounded bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500">
+          <option value="">Select an option</option>
+          <option value="Prince">Energy drink or soda</option>
+          <option value="Zeera Plus">Karak chai</option>
+          <option value="Oreo">Milk (yes, still!)</option>
+          <option value="Candi">Latte or iced coffee</option>
+          <option value="Gala">Pakola or Rooh Afza</option>
+          <option value="Wheatable">Green smoothie</option>
+          <option value="Tuc">Salted lassi or nimbo pani</option>
+          <option value="MilcuLo">Chocolate milk</option>
+          <option value="Cadbury">Black coffee or espresso</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block font-semibold mb-1">4. Pick a vibe for your aesthetic:</label>
+        <select name="q4" class="biscuit-option w-full p-2 rounded bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500">
+          <option value="">Select an option</option>
+          <option value="Prince">Sporty cool</option>
+          <option value="Zeera Plus">Desi elegance</option>
+          <option value="Oreo">Whimsical and fun</option>
+          <option value="Candi">Neutral tones and clean girl</option>
+          <option value="Gala">Colorful and loud</option>
+          <option value="Wheatable">Minimalist and fresh</option>
+          <option value="Tuc">Laid-back cozy</option>
+          <option value="MilcuLo">Cute and babycore</option>
+          <option value="Cadbury">Dark academia</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block font-semibold mb-1">5. You’re the friend who...</label>
+        <select name="q5" class="biscuit-option w-full p-2 rounded bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500">
+          <option value="">Select an option</option>
+          <option value="Prince">Leads the adventure</option>
+          <option value="Zeera Plus">Hosts chai parties</option>
+          <option value="Oreo">Acts silly for fun</option>
+          <option value="Candi">Gives outfit inspo</option>
+          <option value="Gala">Lights up the room</option>
+          <option value="Wheatable">Has all the planners</option>
+          <option value="Tuc">Gets along with everyone</option>
+          <option value="MilcuLo">Talks about old cartoons</option>
+          <option value="Cadbury">Has mysterious taste</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block font-semibold mb-1">6. What’s your snack style?</label>
+        <select name="q6" class="biscuit-option w-full p-2 rounded bg-gray-100 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500">
+          <option value="">Select an option</option>
+          <option value="Prince">On-the-go munchies</option>
+          <option value="Zeera Plus">Chai time plate</option>
+          <option value="Oreo">Dipped in milk</option>
+          <option value="Candi">Paired with coffee</option>
+          <option value="Gala">With loud laughter</option>
+          <option value="Wheatable">Pre-gym or breakfast snack</option>
+          <option value="Tuc">Snack tray at hangouts</option>
+          <option value="MilcuLo">Something sweet and light</option>
+          <option value="Cadbury">Taste that stands out</option> <!-- Updated text -->
+        </select>
+      </div>
+
+      <button type="submit" class="mt-4 w-full bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-red-700 transition duration-300 ease-in-out">Find My Biscuit</button>
+    </form>
+  </div>
+
+  <!-- Result Page HTML (initially hidden) -->
+  <div id="resultPage" class="result-page hidden">
+    <h2 class="text-4xl font-bold mb-4" id="biscuitNameResult"></h2>
+    <p class="text-xl mb-8 max-w-lg mx-auto" id="biscuitResult"></p>
+    <button id="retakeQuizBtn" class="bg-white text-red-600 font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-gray-200 transition duration-300 ease-in-out">Retake Quiz</button>
+  </div>
+
+  <!-- Loading Screen HTML -->
+  <div id="loadingScreen" class="loading-screen hidden">
+    <span class="spinner">C</span>
+  </div>
+
+  <script>
+    // Define the personality descriptions for each biscuit
+    const biscuitPersonalities = {
+      'Prince': "You’re bold, confident, and ready to take the lead. Always bringing energy and enthusiasm to the table.",
+      'Zeera Plus': "You value tradition and warmth. Family-oriented, dependable, and perfectly paired with a good cup of chai.",
+      'Oreo': "Sociable, playful, and always in demand. You strike the perfect balance between fun and familiarity.",
+      'Candi': "You’ve got a refined taste with a calm, collected presence. Coffee companion, subtly sweet, always composed.",
+      'Gala': "Vibrant, cheerful, and naturally warm. You bring positive energy into every room you walk into.",
+      'Wheatable': "Balanced and health-conscious, with a no-nonsense attitude. Reliable, grounded, and always prepared.",
+      'Tuc': "Easygoing and adaptable. You get along with everyone and bring people together with your lighthearted charm.",
+      'MilcuLo': "Gentle, nostalgic, and quietly impactful. You have a calming presence that makes people feel at home.",
+      'Cadbury': "Elegant and introspective. You carry a quiet confidence and timeless appeal that draws people in."
+    };
+
+    // Define custom background colors for each biscuit
+    const biscuitColors = {
+      'Prince': '#00008b', // Dark Blue
+      'Candi': '#800000', // Maroon
+      'Tuc': '#FFFF00',   // Yellow
+      'Cadbury': '#330072',// Dark Purple
+      'Zeera Plus': '#967969', // Brownish-Grey
+      'Oreo': '#0042AA',  // Dark Blue
+      'Wheatable': '#8B4513', // Saddle Brown
+      'Gala': '#FFFF00',   // Yellow
+      'MilcuLo': '#88E788' // Light Green
+    };
+
+    const quizForm = document.getElementById('quizForm');
+    const quizContainer = document.getElementById('quizContainer'); // Reference to the main quiz container
+    const resultPage = document.getElementById('resultPage');     // Reference to the new result page
+    const biscuitNameResult = document.getElementById('biscuitNameResult');
+    const biscuitResultText = document.getElementById('biscuitResult');
+    const loadingScreen = document.getElementById('loadingScreen');
+    const retakeQuizBtn = document.getElementById('retakeQuizBtn');
+
+    // Function to reset the quiz
+    function resetQuiz() {
+      quizForm.reset(); // Reset all form fields
+      resultPage.classList.remove('show'); // Hide the result page
+      resultPage.classList.add('hidden'); // Ensure result page is hidden
+      quizContainer.classList.remove('hidden'); // Show the quiz container
+      document.body.style.backgroundColor = '#e30613'; // Reset body background to initial red
+    }
+
+    // Add an event listener to the quiz form for submission
+    quizForm.addEventListener('submit', function (e) {
+      e.preventDefault(); // Prevent the default form submission behavior
+
+      // Hide the quiz container immediately
+      quizContainer.classList.add('hidden');
+
+      // Show loading screen
+      loadingScreen.classList.remove('hidden');
+      loadingScreen.classList.add('show');
+
+      const formData = new FormData(e.target); // Get all form data
+      const score = {}; // Initialize an empty object to store biscuit scores
+
+      // Initialize scores for all biscuits to 0 to ensure all are accounted for
+      Object.keys(biscuitPersonalities).forEach(biscuit => {
+        score[biscuit] = 0;
+      });
+
+      // Iterate over the selected values from the form
+      for (let [name, value] of formData.entries()) {
+        // Ensure the selected value is not the default empty option
+        if (value && score.hasOwnProperty(value)) {
+          score[value]++; // Increment the score for the corresponding biscuit
+        }
+      }
+
+      let finalBiscuit = 'Tuc'; // Default biscuit if no valid answers are selected
+      let maxScore = -1; // Initialize max score to a negative value
+
+      // Determine the biscuit with the highest score
+      for (const biscuit in score) {
+        if (score[biscuit] > maxScore) {
+          maxScore = score[biscuit];
+          finalBiscuit = biscuit;
+        }
+      }
+
+      // If no options were selected (all scores are 0), default to Tuc
+      if (maxScore === 0) {
+        finalBiscuit = 'Tuc';
+      }
+
+      // After 2 seconds, hide loading screen and show result page
+      setTimeout(() => {
+        loadingScreen.classList.remove('show');
+        loadingScreen.classList.add('hidden'); // Hide the loading screen
+
+        document.body.style.backgroundColor = biscuitColors[finalBiscuit]; // Set custom background color for the body
+        
+        biscuitNameResult.innerText = `You are... ${finalBiscuit}!`; // Display biscuit name
+        biscuitResultText.innerText = biscuitPersonalities[finalBiscuit]; // Display personality description
+        
+        resultPage.classList.remove('hidden'); // Show the result page
+        resultPage.classList.add('show');
+      }, 2000); // 2000 milliseconds = 2 seconds
+    });
+
+    // Add event listener for the retake quiz button
+    retakeQuizBtn.addEventListener('click', resetQuiz);
+  </script>
+</body>
